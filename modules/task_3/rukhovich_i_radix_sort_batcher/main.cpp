@@ -1,6 +1,7 @@
 // Copyright 2020 Igor Rukhovich
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
+#include <ctime>
 #include <algorithm>
 #include <vector>
 #include "./radix_sort_batcher.h"
@@ -110,3 +111,54 @@ int main(int argc, char** argv) {
     listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
     return RUN_ALL_TESTS();
 }
+
+/*
+double get_time() {
+  clock_t time = std::clock();
+  return static_cast<double>(time) / CLOCKS_PER_SEC;
+}
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    std::vector<double> cpy;
+    double t, t0, t1, t2;
+    if (rank == 0) {
+        uint64_t num_elements = 16777216u;
+        std::vector<double> arr = random_double_array(num_elements);
+
+        // STD SORT
+        cpy = arr;
+        t = get_time();
+        std::sort(cpy.begin(), cpy.end());
+        t0 = get_time() - t;
+        std::cout << "std sort done in " << t0 << " seconds\n";
+
+        // RADIX SORT
+        cpy = arr;
+        t = get_time();
+        radix_sort(cpy.begin(), cpy.end());
+        t1 = get_time() - t;
+        std::cout << "radix sort done in " << t1 << " seconds\n";
+
+        // BATCHER SORT
+        cpy = arr;
+        t = get_time();
+        std::cout << "batcher sort is starting\n";
+    }
+
+    par_radix_sort_batcher(&cpy);
+
+    if (rank == 0) {
+        t2 = get_time() - t;
+        std::cout << "batcher sort done in " << t2 << " seconds\n";
+        std::cout << "std, radix, batcher\n";
+        std::cout << t0 << ", " << t1 << ", " << t2 << '\n';
+    }
+    MPI_Finalize();
+
+    return 0;
+}
+*/
